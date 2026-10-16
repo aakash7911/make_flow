@@ -19,7 +19,7 @@ def get_next_dob():
 portal_url = "apni file ka name  ya local web ka name likho yhan pr "
 local_html_file = f"file://{os.path.abspath('index.html')}"
 
-enrollment_no = input("Apna Enrollment Number daalein: ").strip()
+enrollment_no = input("Apna Enrollment Number ya apna email  daalein: ").strip()
 dob = input("Apna DOB daalein: ").strip()
 
 options = webdriver.ChromeOptions()
