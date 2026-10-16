@@ -1,1 +1,88 @@
+import os
+import subprocess
+import time
 
+dmg_path = "apni file ka path dale /location  smja dal or moj le "
+
+#1
+
+demo_dobs = [f"{s:04d}" for s in range(10000)]
+
+def get_next_dob():
+   
+    if demo_dobs:
+        return demo_dobs.pop(0)
+    return None
+
+#1
+
+def try_unlock_dmg(dmg_file, password):
+   
+    try:
+        cmd = ["hdiutil", "attach", dmg_file, "-stdinpass"]
+        process = subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+       
+        stdout, stderr = process.communicate(input=password.encode("utf-8"), timeout=10)
+
+        out_str = stdout.decode("utf-8", errors="ignore")
+        err_str = stderr.decode("utf-8", errors="ignore")
+
+        if process.returncode == 0:
+          
+            mount_point = None
+            for line in out_str.splitlines():
+                if "/Volumes/" in line:
+                    parts = line.strip().split()
+                    for p in reversed(parts):
+                        if p.startswith("/Volumes/"):
+                            mount_point = p
+                            break
+                    if mount_point:
+                        break
+            return True, mount_point
+        else:
+            return False, err_str.strip()
+    except Exception as e:
+        return False, str(e)
+
+print("=" * 60)
+print("⚠️ NOTE: Agar screen par 'Enter password' ka popup khula hai,")
+print("toh pehle us popup par 'Cancel' dabakar use band karein!")
+print("=" * 60)
+
+
+dob = input("start krne ke lo koi sa bhii ek number dal jo tumhara fev ho ").strip()
+if not dob:
+    dob = get_next_dob()
+
+print(f"\n📁 Local File: {dmg_path}")
+print("⚡ macOS ke system se verify ho raha hai...\n")
+
+while True:
+    print(f"👉 Password try kar rahe hain: '{dob}' ...", end=" ", flush=True)
+
+    success, result = try_unlock_dmg(dmg_path, dob)
+
+    if success:
+        print("\n" + "=" * 55)
+        print(f"🎉 SUCCESS! Sahi Password mil gaya: {dob}")
+        if result:
+            print(f"📂 Folder Mount ho gaya: {result}")
+            # Finder me folder ko screen par open karna
+            subprocess.run(["open", result])
+            print("🚀 Finder me folder aapke samne screen par KHUL GAYA HAI!")
+        print("=" * 55)
+        break
+    else:
+        print(f"❌ Galat! ({result})")
+        time.sleep(0.3)
+        RETRY_DOB = get_next_dob()
+        if not RETRY_DOB:
+            print("\nKhatam: Aur koi password nahi bacha.")
+            break
+        dob = str(RETRY_DOB).strip()
