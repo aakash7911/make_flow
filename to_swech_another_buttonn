@@ -1,0 +1,184 @@
+ ================= STUDENT BUTTON =================
+try:
+    student_btn = driver.find_element(
+        By.XPATH,
+        "//input[@type='radio' and contains(@value, 'Student')] | "
+        "//label[contains(translate(text(), 'STUDENT', 'student'), 'student')] | "
+        "//button[contains(translate(text(), 'STUDENT', 'student'), 'student')] | "
+        "//a[contains(translate(text(), 'STUDENT', 'student'), 'student')]"
+    )
+    driver.execute_script("arguments[0].click();", student_btn)
+    print("✅ Student select ho gaya.")
+except Exception:
+    pass
+====================================================
+  ================= LOGIN BUTTON =================
+try:
+    login_btn = driver.find_element(
+        By.XPATH,
+        "//button[contains(translate(text(), 'LOGIN', 'login'), 'login')] | "
+        "//button[contains(translate(text(), 'SIGN IN', 'sign in'), 'sign in')] | "
+        "//input[(@type='submit' or @type='button') and contains(translate(@value, 'LOGIN', 'login'), 'login')] | "
+        "//input[contains(@id, 'btnLogin') or contains(@id, 'Login')] | "
+        "//button[contains(@id, 'btnLogin') or contains(@id, 'Login')]"
+    )
+    driver.execute_script("arguments[0].click();", login_btn)
+    print("✅ Login button click ho gaya.")
+except Exception:
+    pass
+
+====================================================
+ ================= SUBMIT BUTTON =================
+try:
+    submit_btn = driver.find_element(
+        By.XPATH,
+        "//button[contains(translate(text(), 'SUBMIT', 'submit'), 'submit')] | "
+        "//input[(@type='submit' or @type='button') and contains(translate(@value, 'SUBMIT', 'submit'), 'submit')] | "
+        "//input[contains(@id, 'btnSubmit') or contains(@id, 'Submit')] | "
+        "//button[contains(@id, 'btnSubmit') or contains(@id, 'Submit')] | "
+        "//button[@type='submit'] | "
+        "//input[@type='submit']"
+    )
+    driver.execute_script("arguments[0].click();", submit_btn)
+    print("✅ Submit button click ho gaya.")
+except Exception:
+    pass
+
+=================================================================
+ ================= OK BUTTON (Popup / Alert) =================
+# Pehle browser ka default alert check karega
+try:
+    alert = driver.switch_to.alert
+    alert.accept()
+    print("✅ Browser Alert par OK dabaya.")
+except Exception:
+    # Agar browser alert nahi hai, to webpage ke popup me OK dhoondhega
+    try:
+        ok_btn = driver.find_element(
+            By.XPATH,
+            "//button[translate(normalize-space(text()), 'OK', 'ok')='ok'] | "
+            "//button[contains(translate(text(), 'OK', 'ok'), 'ok')] | "
+            "//input[(@type='button' or @type='submit') and translate(normalize-space(@value), 'OK', 'ok')='ok'] | "
+            "//button[contains(@class, 'confirm') or contains(@class, 'swal2-confirm')]"
+        )
+        driver.execute_script("arguments[0].click();", ok_btn)
+        print("✅ Popup me OK button click ho gaya.")
+    except Exception:
+        pass
+
+==================================================================
+    ================= YES BUTTON (Popup) =================
+try:
+    alert = driver.switch_to.alert
+    alert.accept()
+    print("✅ Browser Alert par YES (Accept) kiya.")
+except Exception:
+    try:
+        yes_btn = driver.find_element(
+            By.XPATH,
+            "//button[translate(normalize-space(text()), 'YES', 'yes')='yes'] | "
+            "//button[contains(translate(text(), 'YES', 'yes'), 'yes')] | "
+            "//input[(@type='button' or @type='submit') and translate(normalize-space(@value), 'YES', 'yes')='yes'] | "
+            "//a[translate(normalize-space(text()), 'YES', 'yes')='yes']"
+        )
+        driver.execute_script("arguments[0].click();", yes_btn)
+        print("✅ Popup me YES click ho gaya.")
+    except Exception:
+        pass
+
+======================================================================
+        ================= NO BUTTON (Popup) =================
+try:
+    alert = driver.switch_to.alert
+    alert.dismiss()
+    print("✅ Browser Alert par NO (Dismiss) kiya.")
+except Exception:
+    try:
+        no_btn = driver.find_element(
+            By.XPATH,
+            "//button[translate(normalize-space(text()), 'NO', 'no')='no'] | "
+            "//button[contains(translate(text(), 'NO', 'no'), 'no')] | "
+            "//input[(@type='button' or @type='submit') and translate(normalize-space(@value), 'NO', 'no')='no'] | "
+            "//a[translate(normalize-space(text()), 'NO', 'no')='no'] | "
+            "//button[contains(@class, 'cancel') or contains(@class, 'swal2-cancel')]"
+        )
+        driver.execute_script("arguments[0].click();", no_btn)
+        print("✅ Popup me NO click ho gaya.")
+    except Exception:
+        pass
+
+==========================================================================
+       ================= CANCEL / CLOSE BUTTON =================
+try:
+    cancel_btn = driver.find_element(
+        By.XPATH,
+        "//button[contains(translate(text(), 'CANCEL', 'cancel'), 'cancel')] | "
+        "//button[contains(translate(text(), 'CLOSE', 'close'), 'close')] | "
+        "//button[contains(@class, 'close') or @aria-label='Close'] | "
+        "//input[(@type='button' or @type='submit') and contains(translate(@value, 'CANCEL', 'cancel'), 'cancel')]"
+    )
+    driver.execute_script("arguments[0].click();", cancel_btn)
+    print("✅ Cancel / Close button click ho gaya.")
+except Exception:
+    pass
+
+==========================================================================
+      ================= NEXT / CONTINUE BUTTON =================
+try:
+    next_btn = driver.find_element(
+        By.XPATH,
+        "//button[contains(translate(text(), 'NEXT', 'next'), 'next')] | "
+        "//button[contains(translate(text(), 'CONTINUE', 'continue'), 'continue')] | "
+        "//input[(@type='button' or @type='submit') and (contains(translate(@value, 'NEXT', 'next'), 'next') or contains(translate(@value, 'CONTINUE', 'continue'), 'continue'))] | "
+        "//a[contains(translate(text(), 'NEXT', 'next'), 'next') or contains(translate(text(), 'CONTINUE', 'continue'), 'continue')]"
+    )
+    driver.execute_script("arguments[0].click();", next_btn)
+    print("✅ Next / Continue button click ho gaya.")
+except Exception:
+    pass
+
+===========================================================================
+
+              or bhi chayiye to bta dena ok 👍 😃 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
