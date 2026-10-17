@@ -47,8 +47,8 @@ ise chlane ke liye bass jese chyiye use uncoment kr do bass ye apna kam kr dega
 import string
 from itertools import product
 
-PREFIX = "whi prani wali bat"       # Shuru me jo aayega
-SUFFIX = "isme bhi whi"         # Last me jo aayega
+PREFIX = "whi prani wali bat"       # Shuru me jo aayega smj le n yarr 
+SUFFIX = "isme bhi whi"         # Last me jo aayega ab copy pesh krna  pdega sabhi me yarr
 LENGTH = 4           # Kitne characters ka mix combination banana hai
 
 # 1. Letters (a-z, A-Z)
@@ -67,10 +67,7 @@ CHARS = letters + numbers + symbols
 combinations = product(CHARS, repeat=LENGTH)
 
 def get_next_dob():
-    """
-    Har call par letters, numbers aur symbols ka mix combination milega.
-    Jaise: PU@aA1!#, PU@aA1"#, etc.
-    """
+    
     item = next(combinations, None)
     if item is not None:
         return f"{PREFIX}{''.join(item)}{SUFFIX}"
