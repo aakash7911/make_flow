@@ -73,7 +73,6 @@ while True:
         print(f"🎉 SUCCESS! Sahi Password mil gaya: {dob}")
         if result:
             print(f"📂 Folder Mount ho gaya: {result}")
-            # Finder me folder ko screen par open karna
             subprocess.run(["open", result])
             print("🚀 Finder me folder aapke samne screen par KHUL GAYA HAI!")
         print("=" * 55)
