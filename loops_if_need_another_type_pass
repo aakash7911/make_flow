@@ -1,0 +1,14 @@
+PREFIX = "PU@"   # Shuru me kya aayega
+SUFFIX = "#"     # Last me kya aayega (khaali chhodna ho toh "" kar dein)
+DIGITS = 4       # Kitne digit ka number rakhna hai (jaise 4 -> 0000, 3 -> 000)
+
+demo_dobs = [f"{PREFIX}{s:0{DIGITS}d}{SUFFIX}" for s in range(10**DIGITS)]
+
+def get_next_dob():
+    if demo_dobs:
+        return demo_dobs.pop(0)
+    return None
+
+
+print(get_next_dob())  # ye likne ki jrurt n he  ye is loop lo call krta he isliye  vo code me phle se hi he  kewal tm isse per code he use copy krke le jao  ye iisliye he 
+kiyo ki ager tuko smjane ke liye bss 😂|
