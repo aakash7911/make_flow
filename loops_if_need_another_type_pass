@@ -1,5 +1,5 @@
-PREFIX = "PU@"   # Shuru me kya aayega
-SUFFIX = "#"     # Last me kya aayega (khaali chhodna ho toh "" kar dein)
+PREFIX = "kuuuch bhi"   # Shuru me kya aayega
+SUFFIX = "kch bhii"     # Last me kya aayega (khaali chhodna ho toh "" kar dein)
 DIGITS = 4       # Kitne digit ka number rakhna hai (jaise 4 -> 0000, 3 -> 000)
 
 demo_dobs = [f"{PREFIX}{s:0{DIGITS}d}{SUFFIX}" for s in range(10**DIGITS)]
@@ -12,3 +12,74 @@ def get_next_dob():
 
 print(get_next_dob())  # ye likne ki jrurt n he  ye is loop lo call krta he isliye  vo code me phle se hi he  kewal tm isse per code he use copy krke le jao  ye iisliye he 
 kiyo ki ager tuko smjane ke liye bss 😂|
+=================================================================================================
+import string
+from itertools import product
+
+PREFIX = "const"       # Shuru me kya aayega
+SUFFIX = "back const "         # Last me kya aayega
+LENGTH = 4           # Kitne characters ka combination banana hai
+
+# Character set choose karein:
+# 1. Sirf chote letters ke liye:
+CHARS = string.ascii_lowercase                     # 'abcdefghijklmnopqrstuvwxyz'
+
+# 2. Agar capital letters bhi chahiye toh:
+# CHARS = string.ascii_letters                     # a-z aur A-Z dono
+
+# 3. Agar letters + numbers dono mix chahiye toh:
+# CHARS = string.ascii_lowercase + string.digits   # a-z aur 0-9 dono
+
+
+# Sabhi combinations generate karne ke liye iterator
+combinations = product(CHARS, repeat=LENGTH)
+
+def get_next_dob():
+    
+    item = next(combinations, None)
+    if item is not None:
+        return f"{PREFIX}{''.join(item)}{SUFFIX}"
+    return None
+===================================================================================
+ise chlane ke liye bass jese chyiye use uncoment kr do bass ye apna kam kr dega 
+===================================================================================
+
+import string
+from itertools import product
+
+PREFIX = "whi prani wali bat"       # Shuru me jo aayega
+SUFFIX = "isme bhi whi"         # Last me jo aayega
+LENGTH = 4           # Kitne characters ka mix combination banana hai
+
+# 1. Letters (a-z, A-Z)
+letters = string.ascii_letters
+
+# 2. Numbers (0-9)
+numbers = string.digits
+
+# 3. Symbols (!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~)
+symbols = string.punctuation
+
+# Sabhi ko ek sath jod liya:
+CHARS = letters + numbers + symbols
+
+# Sabhi possible combinations ka generator
+combinations = product(CHARS, repeat=LENGTH)
+
+def get_next_dob():
+    """
+    Har call par letters, numbers aur symbols ka mix combination milega.
+    Jaise: PU@aA1!#, PU@aA1"#, etc.
+    """
+    item = next(combinations, None)
+    if item is not None:
+        return f"{PREFIX}{''.join(item)}{SUFFIX}"
+    return None
+===========================================================================================
+
+               dekh rhe ho vinod kiya ho rha he 😂😂😂
+
+
+
+
+
