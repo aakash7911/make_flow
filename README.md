@@ -10,4 +10,11 @@ use kese krna he ye sun lo 😜 => | ager kisi live web pr se krna he  to mene l
   ager tumko jyada jaye ex=> ager pass jyada bda he  to kewal  mene code me #1 -- code --  #1  likha he to kewal jha #1  se #1 he s code ko replace kr do  s jyada 
    wala code tmko dsri file repo ki dsri file  loop me mil jaega  der sare trrike ke sabhi  loop mil jayenge ok 
 
-   
+   =====================================================================================
+                 //\\          ||   //         //\\                ====    ||
+                //  \\         ||  //         //  \\             ||        ||
+               //====\\        || //         //====\\             =====    ||=======
+              //      \\       || \\        //      \\                ||   ||      || 
+             //        \\      ||  \\      //        \\           =====    ||      ||
+            //          \\     ||   \\    //          \\        ==================== 
+ =======================================================================================          
