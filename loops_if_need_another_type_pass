@@ -1,3 +1,38 @@
+PREFIX = "kuuuch bhi"
+SUFFIX = "kch bhii"
+DIGITS = 2
+
+START_NUMBER = 49
+END_NUMBER = 99
+
+n = int(input("Enter the number of DOBs to generate: "))
+
+demo_dobs = [
+    f"{PREFIX}{s:0{DIGITS}d}{SUFFIX}"
+    for s in range(START_NUMBER, END_NUMBER + 1)
+]
+
+def get_next_dob():
+    if demo_dobs:
+        return demo_dobs.pop(0)
+    return None
+
+i = 0
+while i < n:
+    i = i + 1
+    print(get_next_dob())
+
+
+
+
+
+
+
+
+==========================================================================================
+
+
+============================================================================================
 PREFIX = "kuuuch bhi"   # Shuru me kya aayega
 SUFFIX = "kch bhii"     # Last me kya aayega (khaali chhodna ho toh "" kar dein)
 DIGITS = 4       # Kitne digit ka number rakhna hai (jaise 4 -> 0000, 3 -> 000)
